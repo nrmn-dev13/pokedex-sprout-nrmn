@@ -5,7 +5,7 @@ export default function PokemonDetailPage({ params }) {
   const baseUrl = `https://pokeapi.co/api/v2/`;
   const [pokemons, setPokemons] = useState([]);
   const [evolution, setEvolution] = useState([]);
-  console.log(evolution);
+  // console.log(evolution);
   const { height, weight, species, abilities } = pokemons;
   const getSpeciesNames = (chain) => {
     let speciesNames = [];
@@ -23,52 +23,23 @@ export default function PokemonDetailPage({ params }) {
     // Start the recursion with the top level chain
     recurse(chain);
     return speciesNames;
-  }
-  const evolutionId = (n) => {
-    return Math.ceil(n / 3);
   };
 
-  const getPokemonEvolutionGroup = (evolutionNumber, hasThreeEvolutions) => {
-    if (hasThreeEvolutions) {
-        return Math.floor((evolutionNumber - 1) / 3) + 1;
-    } else {
-        return evolutionNumber + 1;
-    }
-}
+  const handleGetEvolutions = async (url) => {
+    const resEvolution = await fetch(`${url}`);
+    const dataEvolution = await resEvolution.json();
+
+    setEvolution(getSpeciesNames(dataEvolution.chain));
+  };
   const getPokemon = async () => {
     const res = await fetch(`${baseUrl}pokemon/${params.slug}`);
     const data = await res.json();
-    //console.log(data.moves);
-    // const rawData = []
-    // rawData.push(data);
     setPokemons(data);
-    
-    const resEvolution = await fetch(
-      `${baseUrl}evolution-chain/${evolutionId(data.id)}`
-    );
-    const dataEvolution = await resEvolution.json();
-    
-    setEvolution(getSpeciesNames(dataEvolution.chain));
-    console.log(dataEvolution);
-    function countSpecies(evolutionChain) {
-      // Base case: if no evolution chain exists, return 0
-      if (!evolutionChain) return 0;
-      
-      // Start with 1 for the current species
-      let count = 1;
-  
-      // Recursively count the species in each evolves_to chain
-      if (evolutionChain.evolves_to) {
-          for (let evolution of evolutionChain.evolves_to) {
-              count += countSpecies(evolution);
-          }
-      }
-  
-      return count;
-  }
-  
-  const totalSpecies = countSpecies(dataEvolution.chain);
-  console.log(totalSpecies); 
+
+    const speciesRes = await fetch(`${baseUrl}pokemon-species/${params.slug}`);
+    const speciesData = await speciesRes.json();
+    console.log(speciesData.evolution_chain.url);
+    handleGetEvolutions(speciesData.evolution_chain.url);
     // console.log(dataEvolution.chain.evolves_to[0].evolves_to[0].species.name);
   };
 
@@ -84,10 +55,14 @@ export default function PokemonDetailPage({ params }) {
   }, []);
 
   return (
-    <>
-      <div>{params.slug}</div>
+    <div>
       {pokemons.name}
-      
+      <img src={pokemons.sprites?.other?.dream_world.front_default} alt={pokemons.name} />
+      <div>#0{pokemons.id}</div>
+      {pokemons.types?.map((type, index) => {
+        return <div key={index}>{type.type.name}</div>;
+      })}
+
       {/* {pokemons.abilities.map(ability => {
         return <div>{ability.ability.name}</div>;
       })} */}
@@ -101,11 +76,12 @@ export default function PokemonDetailPage({ params }) {
           defaultChecked
         />
         <div role="tabpanel" className="tab-content p-10">
-          {height} - {weight} - {species?.name} {abilities
-        ? abilities.map((ability, index) => {
-            return <div key={index}>{ability.ability.name}</div>;
-          })
-        : null}
+          {height} - {weight} - {species?.name}{" "}
+          {abilities
+            ? abilities.map((ability, index) => {
+                return <div key={index}>{ability.ability.name}</div>;
+              })
+            : null}
         </div>
 
         <input
@@ -135,7 +111,13 @@ export default function PokemonDetailPage({ params }) {
           aria-label="Evolution"
         />
         <div role="tabpanel" className="tab-content p-10">
-          {evolution ? <div>{evolution.map((evolution, index) => <div key={index}>{evolution}</div>)}</div> : null}
+          {evolution ? (
+            <div>
+              {evolution.map((evolution, index) => (
+                <div key={index}>{evolution}</div>
+              ))}
+            </div>
+          ) : null}
         </div>
 
         <input
@@ -156,6 +138,6 @@ export default function PokemonDetailPage({ params }) {
       <button>
         <Link href="/pokemon">Back</Link>
       </button>
-    </>
+    </div>
   );
 }
