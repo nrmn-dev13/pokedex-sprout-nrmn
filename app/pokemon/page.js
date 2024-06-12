@@ -35,6 +35,7 @@ export default function PokemonPage() {
   return (
     <div className="app-contaner">
       <h1>Pokemon Evolution</h1>
+      {isLoading && <div className="loader-wrapper"><span className="loader"></span></div>}
       <div className="pokemon-container">
         <div className="all-container">
           {allPokemons.map((pokemonStats, index) => (
