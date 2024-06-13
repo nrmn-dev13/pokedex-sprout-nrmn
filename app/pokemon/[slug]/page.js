@@ -133,7 +133,7 @@ export default function PokemonDetailPage({ params }) {
                 </div>
                 <div className="field flex items-start">
                   <div className="label max-w-[30%] w-full">Abilities:</div>
-                  <div className="wrapper flex flex-wrap gap-2">
+                  <div className="wrapper flex flex-wrap gap-2 pt-[8px]">
                     {abilities
                       ? abilities.map((ability, index) => {
                           return (
