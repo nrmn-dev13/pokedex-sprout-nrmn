@@ -1,6 +1,7 @@
 "use client";
-import PokemonThumb from "@/components/PokemonThumb";
+import PokemonCard from "@/components/PokemonCard";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function PokemonPage() {
   const [allPokemons, setAllPokemons] = useState([]);
@@ -34,18 +35,23 @@ export default function PokemonPage() {
 
   return (
     <div className="app-contaner">
-      <h1>Pokemon Evolution</h1>
+      <div className="flex justify-center items-center mb-[20px]">
+        <figure className="image-wrapper max-w-[50%]">
+          <img src="/logo-1.png" alt="" />
+        </figure>
+      </div>
       {isLoading && <div className="loader-wrapper"><span className="loader"></span></div>}
       <div className="pokemon-container">
         <div className="all-container">
           {allPokemons.map((pokemonStats, index) => (
-            <PokemonThumb
-              key={index}
-              id={pokemonStats.id}
-              image={pokemonStats.sprites.other.dream_world.front_default}
-              name={pokemonStats.name}
-              type={pokemonStats.types[0].type.name}
-            />
+            <Link href={`/pokemon/${pokemonStats.name}`} key={index}>
+              <PokemonCard
+                id={pokemonStats.id}
+                image={pokemonStats.sprites.other.dream_world.front_default}
+                name={pokemonStats.name}
+                type={pokemonStats.types[0].type.name}
+              />
+            </Link>
             // <li key={index}>{pokemonStats.name}</li>
           ))}
         </div>

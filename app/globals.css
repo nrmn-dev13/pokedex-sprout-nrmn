@@ -94,9 +94,11 @@ h3 {
   text-transform: capitalize;
 }
 .detail-wrapper {
-  display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   width: 100%;
+  display: flex;
 }
 .detail-wrapper button {
   color: rgb(22, 22, 22);
@@ -125,11 +127,11 @@ h3 {
   flex-direction: column;
 }
 .main-card__header {
-  max-height: 50%;
+  max-height: 60%;
   height: 100%;
 }
 .main-card__body {
-  max-height: 50%;
+  max-height: 40%;
   height: 100%;
 }
 .tabs {
@@ -160,8 +162,8 @@ h3 {
   position: relative;
   animation: skLinRotate 1s ease-in-out infinite alternate;
 }
-.loader:after{
-  content:"";
+.loader:after {
+  content: "";
   position: absolute;
   inset: 5px;
   border-radius: 50%;
@@ -169,5 +171,16 @@ h3 {
   border-top-color: #ff3d00;
 }
 @keyframes skLinRotate {
-  95% ,100% { transform: rotate(840deg) }
+  95%,
+  100% {
+    transform: rotate(840deg);
+  }
+}
+.badge {
+  background-color: #ffffff66;
+  border: 1px solid #ffffff66;
+  text-transform: capitalize;
+}
+.back--arow svg {
+  font-size: 30px;
 }

@@ -26,6 +26,9 @@ export default function PokemonDetailPage({ params }) {
     recurse(chain);
     return speciesNames;
   };
+  const formatString = (str) => {
+    return str.replace(/[-_]/g, " ");
+  };
 
   const handleGetEvolutions = async (url) => {
     const resEvolution = await fetch(`${url}`);
@@ -60,29 +63,46 @@ export default function PokemonDetailPage({ params }) {
 
   return (
     <>
-      {isLoading && <div className="loader-wrapper"><span className="loader"></span></div>}
+      {isLoading && (
+        <div className="loader-wrapper">
+          <span className="loader"></span>
+        </div>
+      )}
       <div
         className={`h-screen main-card ${
           pokemons.types?.length > 0 ? `${pokemons.types[0].type.name}` : null
         }`}
       >
-        <div className="main-card__header">
-          <Link href="/pokemon">
-            <IoMdArrowRoundBack />
+        <div className="main-card__header p-[15px]">
+          <Link href="/pokemon" className="back--arrow">
+            <IoMdArrowRoundBack size={32} />
           </Link>
-          {pokemons.name}
-          <img
-            src={pokemons.sprites?.other?.dream_world.front_default}
-            alt={pokemons.name}
-          />
-          <div>#0{pokemons.id}</div>
-          {pokemons.types?.map((type, index) => {
-            return (
-              <div className="test" key={index}>
-                {type.type.name}
+          <div className="main-card__title flex justify-between items-center mt-[8px]">
+            <div className="wrapper">
+              <h4 className="name capitalize text-slate-400 font-bold">
+                {pokemons.name}
+              </h4>
+              <div className="badge-wrapper">
+                {pokemons.types?.map((type, index) => {
+                  return (
+                    <div className="badge" key={index}>
+                      {type.type.name}
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+            <div className="text-slate-400 font-bold">#0{pokemons.id}</div>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <figure className="image-wrapper flex justify-center items-center w-[300px] h-[280px]">
+              <img
+                src={pokemons.sprites?.other?.dream_world.front_default}
+                alt={pokemons.name}
+              />
+            </figure>
+          </div>
         </div>
         <div className="main-card__body">
           <div
@@ -98,12 +118,34 @@ export default function PokemonDetailPage({ params }) {
               defaultChecked
             />
             <div role="tabpanel" className="tab-content p-3">
-              {height} - {weight} - {species?.name}{" "}
-              {abilities
-                ? abilities.map((ability, index) => {
-                    return <div key={index}>{ability.ability.name}</div>;
-                  })
-                : null}
+              <div className="content">
+                <div className="field flex items-center">
+                  <div className="label  max-w-[30%] w-full">Species:</div>
+                  <span className="font-bold capitalize">{species?.name}</span>
+                </div>
+                <div className="field flex items-center">
+                  <div className="label max-w-[30%] w-full">Height:</div>
+                  <span className="font-bold capitalize">{height}</span>
+                </div>
+                <div className="field flex items-center">
+                  <div className="label max-w-[30%] w-full">Weight:</div>
+                  <span className="font-bold capitalize">{weight}</span>
+                </div>
+                <div className="field flex items-start">
+                  <div className="label max-w-[30%] w-full">Abilities:</div>
+                  <div className="wrapper flex flex-wrap gap-2">
+                    {abilities
+                      ? abilities.map((ability, index) => {
+                          return (
+                            <span className="font-bold capitalize" key={index}>
+                              {formatString(ability.ability.name)}
+                            </span>
+                          );
+                        })
+                      : null}
+                  </div>
+                </div>
+              </div>
             </div>
 
             <input
@@ -114,16 +156,36 @@ export default function PokemonDetailPage({ params }) {
               aria-label="Base Stats"
             />
             <div role="tabpanel" className="tab-content p-3">
-              {pokemons.stats
-                ? pokemons.stats.map((stat, index) => {
-                    return (
-                      <div key={index}>
-                        {stat.stat?.name} - {stat.base_stat}
-                        <progress className="progress w-56" value={stat.base_stat} max="100"></progress>
-                      </div>
-                    );
-                  })
-                : null}
+              <div className="content">
+                {pokemons.stats
+                  ? pokemons.stats.map((stat, index) => {
+                      return (
+                        <div key={index}>
+                          <div className="flex items-center justify-between">
+                            <div className="wrapper flex items-center justify-between capitalize max-w-[30%] w-full">
+                              <span className="label">
+                                {/* {formatString(stat.stat?.name)} */}
+                                {stat.stat?.name === "special-attack"
+                                  ? "Sp. Atk"
+                                  : stat.stat?.name === "special-defense"
+                                  ? "Sp. Def"
+                                  : stat.stat?.name}
+                              </span>
+                              <span className="power font-bold">
+                                {stat.base_stat}
+                              </span>
+                            </div>
+                            <progress
+                              className="progress progress-primary max-w-[60%] w-full"
+                              value={stat.base_stat}
+                              max="100"
+                            ></progress>
+                          </div>
+                        </div>
+                      );
+                    })
+                  : null}
+              </div>
             </div>
 
             <input
@@ -134,13 +196,17 @@ export default function PokemonDetailPage({ params }) {
               aria-label="Evolution"
             />
             <div role="tabpanel" className="tab-content p-3">
-              {evolution ? (
-                <div>
-                  {evolution.map((evolution, index) => (
-                    <div key={index}>{evolution}</div>
-                  ))}
-                </div>
-              ) : null}
+              <div className="content">
+                {evolution ? (
+                  <div>
+                    {evolution.map((evolution, index) => (
+                      <div className="label capitalize font-bold" key={index}>
+                        {index + 1} - {evolution}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             </div>
 
             <input
@@ -151,11 +217,19 @@ export default function PokemonDetailPage({ params }) {
               aria-label="Moves"
             />
             <div role="tabpanel" className="tab-content p-3">
-              {pokemons.moves
-                ? pokemons.moves.map((move, index) => {
-                    return <div key={index}>{move.move.name}</div>;
-                  })
-                : null}
+              <div className="content">
+                <ul>
+                  {pokemons.moves
+                    ? pokemons.moves.map((move, index) => {
+                        return (
+                          <li className="capitalize font-bold" key={index}>
+                            {formatString(move.move.name)}
+                          </li>
+                        );
+                      })
+                    : null}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
