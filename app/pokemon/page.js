@@ -52,7 +52,6 @@ export default function PokemonPage() {
                 type={pokemonStats.types[0].type.name}
               />
             </Link>
-            // <li key={index}>{pokemonStats.name}</li>
           ))}
         </div>
         {!initialLoad && (
